@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "simple_filters:block/filter",
+      "y": 180
+    },
+    "facing=north": {
+      "model": "simple_filters:block/filter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "simple_filters:block/filter",
+      "y": 270
+    },
+    "facing=west": {
+      "model": "simple_filters:block/filter"
+    }
+  }
+}
