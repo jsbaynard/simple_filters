@@ -19,6 +19,7 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
     }
 
     // Yes, this is disgusting. No, I'm not messing with this anymore.
+    // If you think you can do better, please PR it. Please.
     @Override
     public void render(FilterBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         if (entity.hasFilteredItem()) {

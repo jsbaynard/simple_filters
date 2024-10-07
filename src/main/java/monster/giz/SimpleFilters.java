@@ -3,7 +3,6 @@ package monster.giz;
 import monster.giz.blocks.FilterBlock;
 import monster.giz.blocks.entity.FilterBlockEntity;
 import net.fabricmc.api.ModInitializer;
-
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -20,7 +19,7 @@ import net.minecraft.util.Identifier;
 public class SimpleFilters implements ModInitializer {
 
 	public static final String NAMESPACE = "simple_filters";
-	public static Identifier idOf(String loc) {
+	public static Identifier id(String loc) {
 		return Identifier.of(NAMESPACE, loc);
 	}
 
@@ -33,8 +32,8 @@ public class SimpleFilters implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		Registry.register(Registries.BLOCK, idOf("filter"), FILTER_BLOCK);
-		Registry.register(Registries.ITEM, idOf("filter"), new BlockItem(FILTER_BLOCK, new Item.Settings()));
+		Registry.register(Registries.BLOCK, id("filter"), FILTER_BLOCK);
+		Registry.register(Registries.ITEM, id("filter"), new BlockItem(FILTER_BLOCK, new Item.Settings()));
 
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {
 			content.addAfter(Items.HOPPER, FILTER_BLOCK);
