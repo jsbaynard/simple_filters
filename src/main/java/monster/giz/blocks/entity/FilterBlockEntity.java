@@ -27,8 +27,9 @@ import static monster.giz.SimpleFilters.FILTER_BLOCK_ENTITY;
 public class FilterBlockEntity extends BlockEntity {
 
     public static final Box INPUT_AREA_SHAPE = Block.createCuboidShape(0.0, 12.0, 0.0, 16.0, 24.0, 16.0).getBoundingBoxes().getFirst();
+    private final Box inputAreaBox = INPUT_AREA_SHAPE.offset(pos.getX(), pos.getY(), pos.getZ());
 
-    private Item filteredItem;
+    private Item filteredItem = Items.AIR;
 
     public static final int COMPARATOR_PULSE_DURATION = 20;
     private int pulseTicks;
@@ -39,22 +40,25 @@ public class FilterBlockEntity extends BlockEntity {
 
     public static void serverTick(World world, BlockPos pos, BlockState state, FilterBlockEntity be) {
         if (world.isClient) return;
+
         be.handleComparatorPulseTicks();
+
         if (!state.get(FilterBlock.ENABLED)) {
             return;
         }
-        BlockState blockAbove = world.getBlockState(pos.add(0, 1, 0));
-        if (blockAbove.isSolidBlock(world, pos.add(0, 1, 0))) {
+
+        BlockPos abovePos = pos.up();
+        BlockState blockAbove = world.getBlockState(abovePos);
+        if (blockAbove.isSolidBlock(world, abovePos)) {
             return;
         }
-        be.getInputEntities().forEach(be::acceptItem);
+
+        List<ItemEntity> entities = be.getInputEntities();
+        entities.forEach(be::acceptItem);
     }
 
     public int calculateComparatorOutput() {
-        if (pulseTicks > 0) {
-            return 15;
-        }
-        return 0;
+        return pulseTicks > 0 ? 15 : 0;
     }
 
     private void pulseComparator() {
@@ -79,8 +83,7 @@ public class FilterBlockEntity extends BlockEntity {
     }
 
     public List<ItemEntity> getInputEntities() {
-        Box box = INPUT_AREA_SHAPE.offset(this.pos.getX(), this.pos.getY(), this.pos.getZ());
-        return world.getEntitiesByClass(ItemEntity.class, box, EntityPredicates.VALID_ENTITY);
+        return world.getEntitiesByClass(ItemEntity.class, inputAreaBox, EntityPredicates.VALID_ENTITY);
     }
 
     public void setFilteredItem(Item filteredItem) {
