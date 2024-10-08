@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.world.World;
 
 public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBlockEntity> {
 
@@ -22,40 +23,45 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
     // If you think you can do better, please PR it. Please.
     @Override
     public void render(FilterBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (entity.hasFilteredItem()) {
-            Direction facing = entity.getCachedState().get(FilterBlock.FACING);
-            switch(facing) {
-                case WEST:
-                    matrices.translate(0.16, 0.30, 0.5);
-                    matrices.scale(0.35F, 0.35F, 0.35F);
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-                    break;
-                case EAST:
-                    matrices.translate(0.84, 0.30, 0.5);
-                    matrices.scale(0.35F, 0.35F, 0.35F);
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
-                    break;
-                case NORTH:
-                    matrices.translate(0.5, 0.30, 0.16);
-                    matrices.scale(0.35F, 0.35F, 0.35F);
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
-                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
-                    break;
-                case SOUTH:
-                    matrices.translate(0.5, 0.30, 0.84);
-                    matrices.scale(0.35F, 0.35F, 0.35F);
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(360));
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
-                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
-                    break;
-            }
-            renderItem(entity, matrices, vertexConsumers, light, overlay);
+        if (!entity.hasFilteredItem()) {
+            return;
         }
+
+        Item item = entity.getFilteredItem();
+        Direction facing = entity.getCachedState().get(FilterBlock.FACING);
+
+        float scale = 0.35F;
+
+        switch (facing) {
+            case WEST:
+                matrices.translate(0.175, 0.30, 0.5);
+                matrices.scale(scale, scale, scale);
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
+                break;
+            case EAST:
+                matrices.translate(0.825, 0.30, 0.5);
+                matrices.scale(scale, scale, scale);
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
+                break;
+            case NORTH:
+                matrices.translate(0.5, 0.30, 0.175);
+                matrices.scale(scale, scale, scale);
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
+                break;
+            case SOUTH:
+                matrices.translate(0.5, 0.30, 0.825);
+                matrices.scale(scale, scale, scale);
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(360));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
+                break;
+        }
+        renderItem(item, entity.getWorld(), matrices, vertexConsumers, light, overlay);
     }
 
-    private void renderItem(FilterBlockEntity be, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        Item item = be.getFilteredItem();
+    private void renderItem(Item item, World world, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
 
         matrices.push();
 
@@ -66,7 +72,7 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
                 overlay,
                 matrices,
                 vertexConsumers,
-                be.getWorld(),
+                world,
                 0
         );
 

@@ -42,14 +42,6 @@ public class FilterBlock extends BlockWithEntity {
             );
 
     // Represents the hitbox as items see it, allowing for items to pass through the "chute"
-    public static final VoxelShape ITEM_HITBOX_old = VoxelShapes.union(
-            VoxelShapes.cuboid(0, 0.625, 0, 1, 1, 1),
-            VoxelShapes.cuboid(0.1875, 0, 0.125, 0.8125, 0.625, 0.1875),
-            VoxelShapes.cuboid(0.1875, 0, 0.8125, 0.8125, 0.625, 0.875),
-            VoxelShapes.cuboid(0.8125, 0, 0.125, 0.875, 0.625, 0.875),
-            VoxelShapes.cuboid(0.125, 0, 0.125, 0.1875, 0.625, 0.875)
-    );
-
     public static final VoxelShape ITEM_HITBOX = VoxelShapes.union(
             VoxelShapes.cuboid(0, 0.625, 0, 1, 1, 1),
             VoxelShapes.cuboid(0.25, 0, 0, 0.75, 0.625, 0.25),
