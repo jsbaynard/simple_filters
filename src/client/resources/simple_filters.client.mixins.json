@@ -1,9 +1,0 @@
-{
-	"required": true,
-	"package": "",
-	"compatibilityLevel": "JAVA_21",
-	"client": [],
-	"injectors": {
-		"defaultRequire": 1
-	}
-}

@@ -9,26 +9,19 @@
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/Gizmonster01/simple_filters"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/simple_filters/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"monster.giz.SimpleFilters"
+			"monster.giz.simple_filters.SimpleFilters"
 		],
 		"client": [
-			"monster.giz.SimpleFiltersClient"
+          "monster.giz.simple_filters.SimpleFiltersClient"
 		]
 	},
-	"mixins": [
-		"simple_filters.mixins.json",
-		{
-			"config": "simple_filters.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.16.5",
 		"minecraft": "~1.21.1",
