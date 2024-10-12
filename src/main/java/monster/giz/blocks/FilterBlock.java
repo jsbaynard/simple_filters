@@ -148,7 +148,7 @@ public class FilterBlock extends BlockWithEntity {
 
     private void updateEnabled(World world, BlockPos pos, BlockState state) {
         boolean bl = !world.isReceivingRedstonePower(pos);
-        if (bl != (Boolean)state.get(ENABLED)) {
+        if (bl != state.get(ENABLED)) {
             world.setBlockState(pos, state.with(ENABLED, bl), Block.NOTIFY_LISTENERS);
         }
     }
