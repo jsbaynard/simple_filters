@@ -1,6 +1,6 @@
-package monster.giz.blocks.entity;
+package monster.giz.simple_filters.blocks.entity;
 
-import monster.giz.blocks.FilterBlock;
+import monster.giz.simple_filters.blocks.FilterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static monster.giz.SimpleFilters.FILTER_BLOCK_ENTITY;
+import static monster.giz.simple_filters.SimpleFilters.FILTER_BLOCK_ENTITY;
 
 public class FilterBlockEntity extends BlockEntity {
 

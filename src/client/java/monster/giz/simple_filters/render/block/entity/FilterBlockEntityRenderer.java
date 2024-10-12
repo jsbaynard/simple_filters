@@ -1,7 +1,7 @@
-package monster.giz.render.block.entity;
+package monster.giz.simple_filters.render.block.entity;
 
-import monster.giz.blocks.FilterBlock;
-import monster.giz.blocks.entity.FilterBlockEntity;
+import monster.giz.simple_filters.blocks.FilterBlock;
+import monster.giz.simple_filters.blocks.entity.FilterBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;

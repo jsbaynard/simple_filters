@@ -1,7 +1,7 @@
-package monster.giz;
+package monster.giz.simple_filters;
 
-import monster.giz.blocks.FilterBlock;
-import monster.giz.blocks.entity.FilterBlockEntity;
+import monster.giz.simple_filters.blocks.FilterBlock;
+import monster.giz.simple_filters.blocks.entity.FilterBlockEntity;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.AbstractBlock;
@@ -15,20 +15,26 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleFilters implements ModInitializer {
 
 	public static final String NAMESPACE = "simple_filters";
-	public static Identifier id(String loc) {
-		return Identifier.of(NAMESPACE, loc);
-	}
+
+	public static final Logger LOGGER = LoggerFactory.getLogger(SimpleFilters.NAMESPACE);
 
 	public static final Block FILTER_BLOCK = new FilterBlock(AbstractBlock.Settings.copy(Blocks.HOPPER).nonOpaque());
 	public static final BlockEntityType<FilterBlockEntity> FILTER_BLOCK_ENTITY = register("filter", BlockEntityType.Builder.create(FilterBlockEntity::new, FILTER_BLOCK).build());
 
+	public static Identifier id(String loc) {
+		return Identifier.of(NAMESPACE, loc);
+	}
+
 	public static <T extends BlockEntityType<?>> T register(String path, T blockEntityType) {
 		return Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(NAMESPACE, path), blockEntityType);
 	}
+
 
 	@Override
 	public void onInitialize() {
@@ -39,6 +45,6 @@ public class SimpleFilters implements ModInitializer {
 			content.addAfter(Items.HOPPER, FILTER_BLOCK);
 		});
 
-		SFLogger.log("Simple Filters initialized.");
+		LOGGER.info("Simple Filters initialized.");
 	}
 }
