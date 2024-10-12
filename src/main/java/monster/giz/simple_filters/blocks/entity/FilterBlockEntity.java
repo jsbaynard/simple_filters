@@ -1,5 +1,6 @@
 package monster.giz.simple_filters.blocks.entity;
 
+import monster.giz.simple_filters.SimpleFilters;
 import monster.giz.simple_filters.blocks.FilterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,7 +32,6 @@ public class FilterBlockEntity extends BlockEntity {
 
     private Item filteredItem = Items.AIR;
 
-    public static final int COMPARATOR_PULSE_DURATION = 20;
     private int pulseTicks;
 
     public FilterBlockEntity(BlockPos pos, BlockState state) {
@@ -62,7 +62,7 @@ public class FilterBlockEntity extends BlockEntity {
     }
 
     private void pulseComparator() {
-        this.pulseTicks = COMPARATOR_PULSE_DURATION;
+        this.pulseTicks = world.getGameRules().getInt(SimpleFilters.FILTER_COMPARATOR_OUTPUT_TICKS);
     }
 
     private void handleComparatorPulseTicks() {
@@ -92,10 +92,16 @@ public class FilterBlockEntity extends BlockEntity {
     }
 
     public void acceptItem(ItemEntity itemEntity) {
+        if (!world.getGameRules().getBoolean(SimpleFilters.FILTER_EMPTY_ACCEPT_ALL) &&
+                (filteredItem == null || filteredItem.equals(Items.AIR))) {
+            return;
+        }
+
         if (filteredItem != null && !itemEntity.getStack().isOf(filteredItem) && !filteredItem.equals(Items.AIR)) {
             return;
         }
 
+        // If conditions are met, proceed with processing the item
         ItemEntity newItem = itemEntity.copy();
         newItem.setVelocity(0, 0, 0);
         newItem.setPos(pos.getX() + 0.5, pos.getY() - 0.15, pos.getZ() + 0.5);
