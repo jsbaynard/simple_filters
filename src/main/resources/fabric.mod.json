@@ -3,15 +3,15 @@
 	"id": "simple_filters",
 	"version": "${version}",
 	"name": "Simple Filters",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Simple vanilla-style, inventoryless item filters.",
 	"authors": [
 		"gizmonster"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
+		"homepage": "https://modrinth.com/mod/simple-filters",
 		"sources": "https://github.com/Gizmonster01/simple_filters"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/simple_filters/icon.png",
 	"environment": "*",
 	"entrypoints": {
