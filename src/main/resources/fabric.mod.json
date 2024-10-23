@@ -22,6 +22,12 @@
           "monster.giz.simple_filters.SimpleFiltersClient"
 		]
 	},
+	"mixins": [
+		{
+			"config": "simple_filters.client.mixins.json",
+			"environment": "client"
+		}
+	],
 	"depends": {
 		"fabricloader": ">=0.16.5",
 		"minecraft": "~1.21.1",

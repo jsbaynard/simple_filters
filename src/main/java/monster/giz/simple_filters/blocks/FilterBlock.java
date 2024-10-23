@@ -6,27 +6,33 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.EnchantmentTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 public class FilterBlock extends BlockWithEntity {
@@ -42,7 +48,7 @@ public class FilterBlock extends BlockWithEntity {
             );
 
     // Represents the hitbox as items see it, allowing for items to pass through the "chute"
-    public static final VoxelShape ITEM_HITBOX = VoxelShapes.union(
+    public static final VoxelShape ITEM_HITBOX_OLD = VoxelShapes.union(
             VoxelShapes.cuboid(0, 0.625, 0, 1, 1, 1),
             VoxelShapes.cuboid(0.25, 0, 0, 0.75, 0.625, 0.25),
             VoxelShapes.cuboid(0.25, 0, 0.75, 0.75, 0.625, 1),
@@ -50,13 +56,21 @@ public class FilterBlock extends BlockWithEntity {
             VoxelShapes.cuboid(0, 0, 0, 0.25, 0.625, 1)
             );
 
+    public static final VoxelShape ITEM_HITBOX = VoxelShapes.union(
+            VoxelShapes.cuboid(0, 0.375, 0, 1, 1, 1),
+            VoxelShapes.cuboid(0.25, 0, 0.75, 0.75, 0.375, 1),
+            VoxelShapes.cuboid(0, 0, 0, 0.25, 0.375, 1),
+            VoxelShapes.cuboid(0.75, 0, 0, 1, 0.375, 1),
+            VoxelShapes.cuboid(0.25, 0, 0, 0.75, 0.375, 0.25)
+    );
+
     // Collision for drawing the outline
     public static final VoxelShape OUTLINE_SHAPE = VoxelShapes.union(
             VoxelShapes.cuboid(0, 0.625, 0, 1, 1, 1),
             VoxelShapes.cuboid(0.1875, 0, 0.1875, 0.8125, 0.625, 0.8125)
     );
 
-    public static final DirectionProperty FACING = DirectionProperty.of("facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+    public static final EnumProperty<Direction> FILTER_FACING = EnumProperty.of("facing", Direction.class, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
     public static final BooleanProperty ENABLED = Properties.ENABLED;
 
     public FilterBlock(Settings settings) {
@@ -65,14 +79,14 @@ public class FilterBlock extends BlockWithEntity {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(ENABLED, Boolean.TRUE);
+        return this.getDefaultState().with(FILTER_FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(ENABLED, Boolean.TRUE);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         if (world.isClient()) return null;
-        return (world2, pos, state2, be) -> FilterBlockEntity.serverTick(world, pos, state, (FilterBlockEntity) be);
+        return (world2, pos, state2, be) -> FilterBlockEntity.serverTick((ServerWorld) world, pos, state, (FilterBlockEntity) be);
     }
 
     @Override
@@ -92,36 +106,71 @@ public class FilterBlock extends BlockWithEntity {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!state.get(FACING).equals(hit.getSide())) {
-            return ItemActionResult.FAIL;
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        Direction facing = state.get(FILTER_FACING);
+        if (!facing.equals(hit.getSide())) {
+            return ActionResult.FAIL;
+        }
+
+        ItemStack handItem = player.getMainHandStack();
+
+        if (handItem.isEmpty()) {
+            return ActionResult.FAIL;
         }
 
         if (world.isClient) {
-            return ItemActionResult.CONSUME;
+            if (hitEmbeddedItemFrame(facing, hit)) return ActionResult.SUCCESS;
+            return ActionResult.FAIL;
+        }
+
+        if (!hitEmbeddedItemFrame(facing, hit)) {
+            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
         }
 
         FilterBlockEntity entity = getBlockEntity(world, pos);
+        ItemStack filterItem = entity.getFilteredStack();
 
-        Item filterItem = entity.getFilteredItem();
-        Item handItem = player.getMainHandStack().getItem();
-
-        if (handItem == null) {
-            if (filterItem == null) {
-                return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
-            }
-            entity.setFilteredItem(null);
-            world.playSound(null, pos, SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            return ItemActionResult.SUCCESS;
+        if (!filterItem.isEmpty()) {
+            return ActionResult.FAIL;
         }
 
-        if (handItem.equals(filterItem)) {
-            return ItemActionResult.SUCCESS;
-        }
-
-        entity.setFilteredItem(handItem);
+        entity.setFilteredStack(handItem.copyWithCount(1));
+        handItem.decrementUnlessCreative(1, player);
         world.playSound(null, pos, SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, SoundCategory.BLOCKS, 1.0F, 1.0F);
-        return ItemActionResult.SUCCESS;
+
+        return ActionResult.SUCCESS;
+    }
+
+    public void onPunched(World world, BlockPos pos, boolean creativeMode) {
+        FilterBlockEntity entity = getBlockEntity(world, pos);
+        BlockState state = world.getBlockState(pos);
+        if (entity.hasFilteredItem()) {
+            world.playSound(null, pos, SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            if (creativeMode) {
+                entity.setFilteredStack(ItemStack.EMPTY);
+                return;
+            }
+            entity.dropFrameStack(state.get(FILTER_FACING));
+        }
+    }
+
+    public boolean hitEmbeddedItemFrame(Direction facing, BlockHitResult hit) {
+        BlockPos pos = hit.getBlockPos().offset(facing);
+        Vec3d vec3d = hit.getPos().subtract(pos.getX(), pos.getY(), pos.getZ());
+
+        float x = (float) vec3d.getX();
+        float y = (float) vec3d.getY();
+        float z = (float) vec3d.getZ();
+
+        Vec2f planePos = switch (facing) {
+            case NORTH -> new Vec2f(1.0f - x, y);
+            case SOUTH -> new Vec2f(x, y);
+            case WEST -> new Vec2f(z, y);
+            case EAST -> new Vec2f(1.0f - z, y);
+            default -> new Vec2f(0, 0);
+        };
+
+        return planePos.x > 0.31 && planePos.x < 0.69 && planePos.y > 0.12 && planePos.y < 0.5;
     }
 
     @Override
@@ -142,7 +191,17 @@ public class FilterBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (!player.isCreative()) {
+            ItemEntity droppedItem = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, getBlockEntity(world, pos).getFilteredStack());
+            world.spawnEntity(droppedItem);
+        }
+        return super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
         this.updateEnabled(world, pos, state);
     }
 
@@ -165,7 +224,7 @@ public class FilterBlock extends BlockWithEntity {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING).add(ENABLED);
+        builder.add(FILTER_FACING).add(ENABLED);
     }
 
     @Nullable

@@ -7,11 +7,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 
@@ -33,15 +32,15 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
             return;
         }
 
-        Item item = entity.getFilteredItem();
-        Direction facing = entity.getCachedState().get(FilterBlock.FACING);
-        BakedModel model = itemRenderer.getModel(item.getDefaultStack(), null, null, 0);
+        ItemStack stack = entity.getFilteredStack();
+        Direction facing = entity.getCachedState().get(FilterBlock.FILTER_FACING);
+        BakedModel model = itemRenderer.getModel(stack, null, null, 0);
 
         float scale = 0.35F;
 
-        // This is a design choice, wanted items that have the block item model to appear larger in the frame
+        // This is a design choice, wanted items that have the block stack model to appear larger in the frame
         // for better visual clarity.
-        if (item instanceof BlockItem) {
+        if (stack.getItem() instanceof BlockItem) {
             if (hasBlockItemTransformations(model)) {
                 scale = 0.5F;
             }
@@ -73,14 +72,11 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
                 break;
         }
-        renderItem(model, item.getDefaultStack(), matrices, vertexConsumers, light, overlay);
+        renderItem(model, stack, matrices, vertexConsumers, light, overlay);
     }
 
     private boolean hasBlockItemTransformations(BakedModel model) {
-        if (model.getTransformation().thirdPersonRightHand.scale.x == VANILLA_BLOCK_ITEM_SCALE_FACTOR) {
-            return true;
-        }
-        return false;
+        return model.getTransformation().thirdPersonRightHand.scale.x == VANILLA_BLOCK_ITEM_SCALE_FACTOR;
     }
 
     private void renderItem(BakedModel model, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
