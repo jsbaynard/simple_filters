@@ -31,8 +31,8 @@ public class SimpleFilters implements ModInitializer {
 
 	public static final BlockEntityType<FilterBlockEntity> FILTER_BLOCK_ENTITY = registerBlockEntity("filter", FabricBlockEntityTypeBuilder.create(FilterBlockEntity::new, FILTER_BLOCK).build());
 
-	public static final GameRules.Key<GameRules.BooleanRule> FILTER_EMPTY_ACCEPT_ALL = GameRuleRegistry.register("filtersEmptyAcceptsAny", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
-	public static final GameRules.Key<GameRules.IntRule> FILTER_COMPARATOR_OUTPUT_TICKS = GameRuleRegistry.register("filtersComparatorOutputTicks", GameRules.Category.MISC, GameRuleFactory.createIntRule(10, 0, 40));
+	public static final GameRules.Key<GameRules.BooleanRule> FILTER_EMPTY_ACCEPT_ALL = GameRuleRegistry.register("filterEmptyAcceptsAny", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.IntRule> FILTER_COMPARATOR_OUTPUT_TICKS = GameRuleRegistry.register("filterComparatorOutputTicks", GameRules.Category.MISC, GameRuleFactory.createIntRule(10, 0, 40));
 
 	public static Identifier idOf(String loc) {
 		return Identifier.of(NAMESPACE, loc);
