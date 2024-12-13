@@ -3,6 +3,7 @@
   "package": "monster.giz.simple_filters.client.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "BasicItemModelMixin",
     "MinecraftClientMixin"
   ],
   "injectors": {
