@@ -2,7 +2,7 @@ package monster.giz.simple_filters.render.block.entity;
 
 import monster.giz.simple_filters.blocks.FilterBlock;
 import monster.giz.simple_filters.blocks.entity.FilterBlockEntity;
-import monster.giz.simple_filters.client.access.BasicItemModelAccess;
+import monster.giz.simple_filters.client.access.ItemModelTransformationAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -10,12 +10,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.item.model.BasicItemModel;
 import net.minecraft.client.render.item.model.ItemModel;
+import net.minecraft.client.render.item.model.SpecialItemModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -35,6 +33,10 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
         this.itemRenderer = context.getItemRenderer();
         this.modelManager = MinecraftClient.getInstance().getBakedModelManager();
         this.rescaleMap = new HashMap<>();
+
+        rescaleMap.put(Items.CHEST, true);
+        rescaleMap.put(Items.TRAPPED_CHEST, true);
+        rescaleMap.put(Items.ENDER_CHEST, true);
     }
 
     // Yes, this is disgusting. No, I'm not messing with this anymore.
@@ -81,27 +83,28 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
 
 
     // Purpose of this is to make items with a block item model bigger for better visibilty.
-    // BlockItem applies to items with 'generated' models too, hence the following logic.
+    // BlockItem can apply to items with 'generated' models too, hence the following logic.
     private float getScaleFactor(Item item) {
+        Boolean cachedScale = rescaleMap.get(item);
+        if (cachedScale != null) {
+            return cachedScale ? 0.5F : 0.35F;
+        }
+
         if (!(item instanceof BlockItem)) {
             return 0.35F;
         }
 
-        Boolean bool = rescaleMap.get(item);
-        if (bool == null) {
-            boolean result = false;
-            Identifier id = Registries.ITEM.getId(item);
-            ItemModel model = modelManager.getItemModel(id);
+        boolean result = false;
+        Identifier id = Registries.ITEM.getId(item);
+        ItemModel model = modelManager.getItemModel(id);
 
-            if (model instanceof BasicItemModel basic) {
-                if (((BasicItemModelAccess) basic).simplefilters$getModelRightHandScaleValue() == VANILLA_BLOCK_ITEM_SCALE_FACTOR) {
-                    result = true;
-                }
-            }
-            rescaleMap.put(item, result);
-            return result ? 0.5F : 0.35F;
+        if (model instanceof BasicItemModel) {
+            result = ((ItemModelTransformationAccess) model).simple_filters$getModelRightHandScaleValue() == VANILLA_BLOCK_ITEM_SCALE_FACTOR;
         }
-        return bool ? 0.5F : 0.35F;
+
+        rescaleMap.put(item, result);
+
+        return result ? 0.5F : 0.35F;
     }
 
 
