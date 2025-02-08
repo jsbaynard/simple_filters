@@ -1,13 +1,8 @@
 package monster.giz.simple_filters.client.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import monster.giz.simple_filters.SimpleFilters;
 import monster.giz.simple_filters.blocks.FilterBlock;
-import monster.giz.simple_filters.network.c2s.play.FilterFramePunchPayload;
+import monster.giz.simple_filters.network.c2s.FilterFramePunchPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -42,8 +37,8 @@ public abstract class MinecraftClientMixin {
     public void simple_filters$captureFilterPunch(CallbackInfoReturnable<Boolean> cir, @Local BlockPos blockPos) {
         BlockHitResult result = (BlockHitResult) crosshairTarget;
         BlockState state = world.getBlockState(blockPos);
-        if (state.getBlock() instanceof FilterBlock block) {
-            if (block.hitEmbeddedItemFrame(state.get(FilterBlock.FILTER_FACING), result)) {
+        if (state.getBlock() instanceof FilterBlock filterBlock) {
+            if (filterBlock.hitEmbeddedItemFrame(state.get(FilterBlock.FILTER_FACING), result)) {
                 ClientPlayNetworking.send(new FilterFramePunchPayload(blockPos));
                 if (this.player.isCreative()) {
                     cir.setReturnValue(true);

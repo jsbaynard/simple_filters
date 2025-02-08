@@ -1,4 +1,4 @@
-package monster.giz.simple_filters.client.access;
+package monster.giz.simple_filters.client.ducks;
 
 public interface ItemModelTransformationAccess {
 

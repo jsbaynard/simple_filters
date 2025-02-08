@@ -1,5 +1,10 @@
 {
   "block.simple_filters.filter": "Filter",
+  "block.simple_filters.collector": "Collector",
+  "block.simple_filters.chute": "Chute",
+  "block.simple_filters.extractor": "Extractor",
+
+
   "gamerule.filterEmptyAcceptsAny": "Empty filters accept any items",
   "gamerule.filterComparatorOutputTicks": "Filter comparator pulse duration (ticks)"
 }

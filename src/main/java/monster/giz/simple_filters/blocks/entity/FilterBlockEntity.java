@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static monster.giz.simple_filters.SimpleFilters.FILTER_BLOCK_ENTITY;
+import static monster.giz.simple_filters.blocks.entity.SFBlockEntities.FILTER_BLOCK_ENTITY;
 
 public class FilterBlockEntity extends BlockEntity {
 

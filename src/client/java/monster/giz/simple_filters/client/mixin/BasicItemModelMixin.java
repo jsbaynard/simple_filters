@@ -1,6 +1,6 @@
 package monster.giz.simple_filters.client.mixin;
 
-import monster.giz.simple_filters.client.access.ItemModelTransformationAccess;
+import monster.giz.simple_filters.client.ducks.ItemModelTransformationAccess;
 import net.minecraft.client.render.item.model.BasicItemModel;
 import net.minecraft.client.render.item.model.ItemModel;
 import net.minecraft.client.render.model.BakedModel;

@@ -1,4 +1,4 @@
-package monster.giz.simple_filters.network.c2s.play;
+package monster.giz.simple_filters.network.c2s;
 
 import monster.giz.simple_filters.SimpleFilters;
 import net.minecraft.network.RegistryByteBuf;

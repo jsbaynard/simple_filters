@@ -6,14 +6,11 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.EnchantmentTags;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -38,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 public class FilterBlock extends BlockWithEntity {
 
     // Represents the hitbox as players/entities experience it
-    private static final VoxelShape HITBOX =
+    public static final VoxelShape HITBOX =
             VoxelShapes.union(
                     VoxelShapes.cuboid(0, 0.625, 0, 1, 1, 1),
                     VoxelShapes.cuboid(0.25, 0, 0.1875, 0.75, 0.625, 0.25),
@@ -48,14 +45,6 @@ public class FilterBlock extends BlockWithEntity {
             );
 
     // Represents the hitbox as items see it, allowing for items to pass through the "chute"
-    public static final VoxelShape ITEM_HITBOX_OLD = VoxelShapes.union(
-            VoxelShapes.cuboid(0, 0.625, 0, 1, 1, 1),
-            VoxelShapes.cuboid(0.25, 0, 0, 0.75, 0.625, 0.25),
-            VoxelShapes.cuboid(0.25, 0, 0.75, 0.75, 0.625, 1),
-            VoxelShapes.cuboid(0.75, 0, 0, 1, 0.625, 1),
-            VoxelShapes.cuboid(0, 0, 0, 0.25, 0.625, 1)
-            );
-
     public static final VoxelShape ITEM_HITBOX = VoxelShapes.union(
             VoxelShapes.cuboid(0, 0.375, 0, 1, 1, 1),
             VoxelShapes.cuboid(0.25, 0, 0.75, 0.75, 0.375, 1),
