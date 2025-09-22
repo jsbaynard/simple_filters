@@ -17,7 +17,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
-
+import net.minecraft.util.math.Vec3d;
 import java.util.HashMap;
 
 public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBlockEntity> {
@@ -41,7 +41,7 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
     // Yes, this is disgusting. No, I'm not messing with this anymore.
     // If you think you can do better, please PR it. Please.
     @Override
-    public void render(FilterBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(FilterBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
         if (!entity.hasFilteredItem()) {
             return;
         }
@@ -104,7 +104,7 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
         Identifier id = Registries.ITEM.getId(item);
         ItemModel model = modelManager.getItemModel(id);
 
-        if (model instanceof BasicItemModel) {
+        if (model instanceof BasicItemModel basicItemModel) {
             return ((ItemModelTransformationAccess) model)
                     .simple_filters$getModelRightHandScaleValue() == VANILLA_BLOCK_ITEM_SCALE_FACTOR;
         }
@@ -114,8 +114,8 @@ public class FilterBlockEntityRenderer implements BlockEntityRenderer<FilterBloc
 
     private void renderItem(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
-        itemRenderer.renderItem(null, stack, ModelTransformationMode.FIXED, false, matrices, vertexConsumers, null, light, overlay, 0);
+        //itemRenderer.renderItem(null, stack, ModelTransformationMode.FIXED, false, matrices, vertexConsumers, null, light, overlay, 0);
+        itemRenderer.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertexConsumers, null, 0);
         matrices.pop();
     }
-
 }
