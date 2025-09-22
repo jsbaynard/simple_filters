@@ -21,7 +21,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
 
-    @Shadow @Nullable public HitResult crosshairTarget;
+    @Shadow @Nullable
+    public HitResult crosshairTarget;
     @Shadow @Nullable public ClientWorld world;
     @Shadow @Nullable public ClientPlayerEntity player;
 

@@ -15,8 +15,6 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -159,21 +157,29 @@ public class FilterBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeData(WriteView view) {
-        super.writeData(view);
-        view.put(FILTERED_ITEMSTACK_NBT_KEY, ItemStack.OPTIONAL_CODEC, this.filteredItemStack);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        createNbt(nbt, registryLookup);
     }
 
-
     @Override
-    protected void readData(ReadView view) {
-        super.readData(view);
-        this.filteredItemStack = view.read(FILTERED_ITEMSTACK_NBT_KEY, ItemStack.OPTIONAL_CODEC)
-                .orElse(ItemStack.EMPTY);
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        filteredItemStack = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound(FILTERED_ITEMSTACK_NBT_KEY));
+    }
+
+    public NbtCompound createNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        if (!filteredItemStack.isEmpty()) {
+            nbt.put(FILTERED_ITEMSTACK_NBT_KEY, filteredItemStack.toNbt(registryLookup));
+        } else {
+            nbt.put(FILTERED_ITEMSTACK_NBT_KEY, filteredItemStack.toNbtAllowEmpty(registryLookup));
+        }
+        return nbt;
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return createNbt(registryLookup);
+        NbtCompound nbt = super.toInitialChunkDataNbt(registryLookup);
+        return createNbt(nbt, registryLookup);
     }
 }
