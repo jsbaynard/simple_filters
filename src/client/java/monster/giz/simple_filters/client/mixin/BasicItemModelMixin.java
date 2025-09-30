@@ -16,7 +16,6 @@ public abstract class BasicItemModelMixin implements ItemModel, ItemModelTransfo
     @Shadow
     public @Final ModelSettings settings;
 
-
     @Unique
     @Override
     public float simple_filters$getModelRightHandScaleValue() {

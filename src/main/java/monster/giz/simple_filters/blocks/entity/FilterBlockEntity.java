@@ -17,14 +17,18 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
-import net.minecraft.util.math.*;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.HeldItemContext;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import java.util.List;
 
 import static monster.giz.simple_filters.blocks.entity.SFBlockEntities.FILTER_BLOCK_ENTITY;
 
-public class FilterBlockEntity extends BlockEntity {
+public class FilterBlockEntity extends BlockEntity implements HeldItemContext {
 
     public static final Box INPUT_AREA_SHAPE = Block.createCuboidShape(0.0, 12.0, 0.0, 16.0, 24.0, 16.0).getBoundingBoxes().getFirst();
     private final Box inputAreaBox = INPUT_AREA_SHAPE.offset(pos.getX(), pos.getY(), pos.getZ());
@@ -94,9 +98,7 @@ public class FilterBlockEntity extends BlockEntity {
         if (!canAcceptItem(itemEntity)) {
             return;
         }
-        ItemEntity newItem = itemEntity.copy();
-        newItem.setVelocity(0, 0, 0);
-        newItem.setPos(pos.getX() + 0.5, pos.getY() - 0.15, pos.getZ() + 0.5);
+        ItemEntity newItem = new ItemEntity(world, pos.getX() + 0.5, pos.getY() - 0.15, pos.getZ() + 0.5, itemEntity.getStack(), 0, 0, 0);
         newItem.setPickupDelay(20);
         itemEntity.discard();
         world.spawnEntity(newItem);
@@ -152,7 +154,6 @@ public class FilterBlockEntity extends BlockEntity {
         return (ServerWorld) world;
     }
 
-    @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
@@ -175,5 +176,20 @@ public class FilterBlockEntity extends BlockEntity {
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         return createNbt(registryLookup);
+    }
+
+    @Override
+    public World getEntityWorld() {
+        return this.world;
+    }
+
+    @Override
+    public Vec3d getEntityPos() {
+        return this.getPos().toCenterPos();
+    }
+
+    @Override
+    public float getBodyYaw() {
+        return (this.getCachedState().get(FilterBlock.FILTER_FACING)).getOpposite().getPositiveHorizontalDegrees();
     }
 }
