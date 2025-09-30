@@ -11,7 +11,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,10 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
 
-    @Shadow @Nullable
+    @Shadow
     public HitResult crosshairTarget;
-    @Shadow @Nullable public ClientWorld world;
-    @Shadow @Nullable public ClientPlayerEntity player;
+    @Shadow public ClientWorld world;
+    @Shadow public ClientPlayerEntity player;
 
     // Vanilla Minecraft does not communicate the exact position a block is punched. Since I need the
     // built-in item frame to drop it's item when punched, I added a client side condition for checking

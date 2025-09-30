@@ -30,7 +30,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.block.WireOrientation;
-import org.jetbrains.annotations.Nullable;
 
 public class FilterBlock extends BlockWithEntity {
 
@@ -71,7 +70,6 @@ public class FilterBlock extends BlockWithEntity {
         return this.getDefaultState().with(FILTER_FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(ENABLED, Boolean.TRUE);
     }
 
-    @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         if (world.isClient()) return null;
@@ -107,7 +105,7 @@ public class FilterBlock extends BlockWithEntity {
             return ActionResult.FAIL;
         }
 
-        if (world.isClient) {
+        if (world.isClient()) {
             if (hitEmbeddedItemFrame(facing, hit)) return ActionResult.SUCCESS;
             return ActionResult.FAIL;
         }
@@ -189,7 +187,7 @@ public class FilterBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, WireOrientation wireOrientation, boolean notify) {
         super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
         this.updateEnabled(world, pos, state);
     }
@@ -207,7 +205,7 @@ public class FilterBlock extends BlockWithEntity {
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return getBlockEntity(world, pos).calculateComparatorOutput();
     }
 
@@ -216,7 +214,6 @@ public class FilterBlock extends BlockWithEntity {
         builder.add(FILTER_FACING).add(ENABLED);
     }
 
-    @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new FilterBlockEntity(pos, state);

@@ -37,9 +37,9 @@ public class SimpleFilters implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(FilterFramePunchPayload.ID, FilterFramePunchPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(FilterFramePunchPayload.ID, (payload, context) -> {
 			context.server().execute(() -> {
-				Block block = context.player().getWorld().getBlockState(payload.blockPos()).getBlock();
+				Block block = context.player().getEntityWorld().getBlockState(payload.blockPos()).getBlock();
 				if (block instanceof FilterBlock filter) {
-					filter.onPunched(context.player().getWorld(), payload.blockPos(), context.player().isCreative());
+					filter.onPunched(context.player().getEntityWorld(), payload.blockPos(), context.player().isCreative());
 				}
 			});
 		});
