@@ -37,11 +37,13 @@ public abstract class MinecraftClientMixin {
     public void simple_filters$captureFilterPunch(CallbackInfoReturnable<Boolean> cir, @Local BlockPos blockPos) {
         BlockHitResult result = (BlockHitResult) crosshairTarget;
         BlockState state = world.getBlockState(blockPos);
-        if (state.getBlock() instanceof FilterBlock filterBlock) {
-            if (filterBlock.hitEmbeddedItemFrame(state.get(FilterBlock.FILTER_FACING), result)) {
-                ClientPlayNetworking.send(new FilterFramePunchPayload(blockPos));
-                if (this.player.isCreative()) {
-                    cir.setReturnValue(true);
+        if (!this.world.getBlockState(blockPos).isAir()) {
+            if (state.getBlock() instanceof FilterBlock filterBlock) {
+                if (filterBlock.hitEmbeddedItemFrame(state.get(FilterBlock.FILTER_FACING), result)) {
+                    ClientPlayNetworking.send(new FilterFramePunchPayload(blockPos));
+                    if (this.player.isCreative()) {
+                        cir.setReturnValue(true);
+                    }
                 }
             }
         }

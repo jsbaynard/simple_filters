@@ -1,6 +1,7 @@
 package monster.giz.simple_filters.blocks;
 
 import com.mojang.serialization.MapCodec;
+import monster.giz.simple_filters.SimpleFilters;
 import monster.giz.simple_filters.blocks.entity.FilterBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -142,6 +143,11 @@ public class FilterBlock extends BlockWithEntity {
     }
 
     public boolean hitEmbeddedItemFrame(Direction facing, BlockHitResult hit) {
+
+        if (facing != hit.getSide()) {
+            return false;
+        }
+
         BlockPos pos = hit.getBlockPos().offset(facing);
         Vec3d vec3d = hit.getPos().subtract(pos.getX(), pos.getY(), pos.getZ());
 
