@@ -1,7 +1,6 @@
 package monster.giz.simple_filters.blocks;
 
 import com.mojang.serialization.MapCodec;
-import monster.giz.simple_filters.SimpleFilters;
 import monster.giz.simple_filters.blocks.entity.FilterBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
