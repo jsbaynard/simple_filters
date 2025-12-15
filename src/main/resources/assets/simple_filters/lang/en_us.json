@@ -5,8 +5,8 @@
   "block.simple_filters.extractor": "Extractor",
 
 
-  "gamerule.filterEmptyAcceptsAny": "Empty filters accept any items",
-  "gamerule.filterComparatorOutputTicks": "Filter comparator pulse duration (ticks)"
+  "gamerule.simple_filters.empty_filter_accepts_any": "Empty filters accept any items",
+  "gamerule.simple_filters.filter_comparator_output_ticks": "Filter comparator pulse duration (ticks)"
 }
 
 

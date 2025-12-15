@@ -29,6 +29,8 @@ public abstract class MinecraftClientMixin {
     // built-in item frame to drop it's item when punched, I added a client side condition for checking
     // for this and sending a packet to the server.
 
+    // TODO: Make this less disgusting and a little less finicky
+
     @Inject(
             method = "doAttack",
             at = @At(
