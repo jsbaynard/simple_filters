@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class BasicItemModelMixin implements ItemModel, ItemModelTransformationAccess {
 
     @Shadow
-    public @Final ModelSettings settings;
+    @Final
+    private ModelSettings settings;
 
     @Unique
     @Override

@@ -1,5 +1,6 @@
 package monster.giz.simple_filters.blocks.entity;
 
+import monster.giz.simple_filters.SFGamerules;
 import monster.giz.simple_filters.SimpleFilters;
 import monster.giz.simple_filters.blocks.FilterBlock;
 import net.minecraft.block.Block;
@@ -65,7 +66,7 @@ public class FilterBlockEntity extends BlockEntity implements HeldItemContext {
     }
 
     private void pulseComparator() {
-        this.pulseTicks = getServerWorld().getGameRules().getInt(SimpleFilters.FILTER_COMPARATOR_OUTPUT_TICKS);
+        this.pulseTicks = getServerWorld().getGameRules().getValue(SFGamerules.FILTER_COMPARATOR_OUTPUT_TICKS);
     }
 
     private void handleComparatorPulseTicks() {
@@ -107,7 +108,7 @@ public class FilterBlockEntity extends BlockEntity implements HeldItemContext {
     }
 
     public boolean canAcceptItem(ItemEntity itemEntity) {
-        if (!getServerWorld().getGameRules().getBoolean(SimpleFilters.FILTER_EMPTY_ACCEPT_ALL) && (filteredItemStack == null || filteredItemStack.getItem().equals(Items.AIR))) {
+        if (!getServerWorld().getGameRules().getValue(SFGamerules.FILTER_EMPTY_ACCEPT_ALL) && (filteredItemStack == null || filteredItemStack.getItem().equals(Items.AIR))) {
             return false;
         }
         if (!filteredItemStack.isEmpty() && !itemEntity.getStack().isOf(filteredItemStack.getItem())) {
